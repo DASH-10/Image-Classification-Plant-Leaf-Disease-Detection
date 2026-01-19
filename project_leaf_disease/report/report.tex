@@ -1,0 +1,106 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{hyperref}
+
+\title{Klasik Makine Ogrenmesi ve Derin Ogrenme Yaklasimlariyla Bitki Yaprak Hastaligi Siniflandirmasi}
+
+\author{\IEEEauthorblockN{Omar A. M. Issa}
+\IEEEauthorblockA{Artificial Intelligence Engineering\\
+Ostim Technical University\\
+Ankara, Turkey\\
+Student No: 220212901}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Bitki hastaliklarinin erken ve dogru tespiti verim kaybini azaltmak ve tarimsal uretkenligi artirmak icin kritiktir. Uygulamada teshis hala buyuk oranda elle yapilir; bu da zaman alici, oznel ve olceklenmesi zor bir surectir. Bu rapor, veri hazirlama, klasik makine ogrenmesi ve derin ogrenme tekniklerini tek bir deneysel cercevede birlestiren, goruntu tabanli bitki yapragi hastaligi siniflandirma calismasini sunar. Histogram of Oriented Gradients ve Destek Vektor Makinasi tabanli bir el yapimi ozellik temel cizgisi, ResNet-18 ile transfer ogrenme kullanan derin ogrenme cozumune karsilastirilir. Deneyler PlantVillage veri kumesi uzerinde net bir egitim, dogrulama ve test protokoluyle yurutulur. Model performansi dogruluk, makro ortalamali F1, precision--recall analizi ve karmasiklik matrisleri ile degerlendirilir. Sonuclar, derin ogrenmenin daha yuksek ve daha dengeli performans sagladigini, klasik temel cizginin ise yorumlanabilirlik ve verimlilik acisindan degerli kaldigini gosterir. Tekrarlanabilirlik ve deneysel titizlik calisma boyunca vurgulanir.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Bitki hastaligi tespiti, goruntu siniflandirma, makine ogrenmesi, derin ogrenme, ResNet, HOG, SVM
+\end{IEEEkeywords}
+
+\section{Giris ve Problem Tanimi}
+Bitki hastaliklari dunya genelinde tarimsal uretkenlik icin onemli bir zorluktur. Erken tespit edilmezse hastaliklar ciddi verim kayiplarina ve urun kalitesinde dususlere yol acar. Bircok bitki hastaligi yapraklarda renk degisimi, doku bozulmasi veya duzensiz sekil gibi gorunur belirtilerle ortaya cikar. Geleneksel olarak bu belirtilerin belirlenmesi uzman bilgisi ve sahada tekrarli kontroller gerektirir; bu da maliyetli ve olceklenmesi zor bir yaklasimdir.
+
+Yapay zeka bakis acisindan bitki yapragi hastaligi tespiti, denetimli cok sinifli goruntu siniflandirma problemi olarak tanimlanabilir. Bir yaprak goruntusu verildiginde amac, dogru hastalik sinifini atamak veya yapragi saglikli olarak tanimlamaktir. Bilgisayar gorusu ve derin ogrenmedeki ilerlemeler, otomatik teshisi mumkun kilmakta ve tarimsal uygulamalara olceklenebilir ve nesnel karar destegi saglamaktadir.
+
+Bu projenin amaci, veri on isleme, temel modelleme, derin ogrenme, sayisal optimizasyon ve degerlendirme adimlarini bir araya getiren uctan uca bir siniflandirma boru hatti tasarlamak ve degerlendirmektir. Klasik ve derin ogrenme yaklasimlarini karsilastirarak, muhendislik acisindan guclu ve sinirli yonlerini ortaya koymak hedeflenmistir.
+
+\section{Veri Kumesi Tanimi}
+Deneyler, bitki hastaligi siniflandirma arastirmalarinda yaygin olarak kullanilan PlantVillage veri kumesi uzerinde yurutulmustur. Veri kumesi, kontrollu kosullarda cekilmis saglikli ve hastalikli yaprak goruntulerinden olusur; bu durum arka plan degiskenligini azaltir ve ogrenmeyi hastalikla ilgili gorsel oruntulere odaklar.
+
+Bu projede kullanilan islenmis veri kumesi 24 farkli sinif icermektedir. Bir sinif yapraksiz arka plan goruntulerini temsil ederken, diger siniflar belirli urun--hastalik kombinasyonlari veya saglikli urun kategorileridir. Guvenilir ve tarafsiz performans degerlendirmesi icin veri, sinif dagilimlarini koruyan stratified bir bolme stratejisiyle egitim, dogrulama ve test alt kumesine ayrilmistir.
+
+\begin{table}[H]
+\centering
+\caption{Veri Kumesi Bolunmeleri Ozeti}
+\begin{tabular}{lccc}
+\toprule
+Bolum & Goruntu Sayisi & Yuzde \\
+\midrule
+Egitim & 19,862 & 70\% \\
+Dogrulama & 4,256 & 15\% \\
+Test & 4,257 & 15\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Sinif frekanslari incelendiginde hastalik kategorileri arasinda orta duzey dengesizlik gorulur. Bu nedenle, dogrulukla birlikte makro ortalamali F1 gibi sinif dengesizligini dikkate alan metrikler de vurgulanir. Ayrintili gorsel analizler ve veri kesfi, eslik eden Jupyter Notebook icinde sunulmustur.
+
+\section{Yontem}
+Onerilen sistem, veri hazirlama, temel modelleme ve derin ogrenme tabanli siniflandirmayi iceren yapili ve tekrarlanabilir bir makine ogrenmesi is akisina sahiptir. Tasarim, yaklasimlar arasinda net ve adil bir karsilastirma yapilmasini hedefler.
+
+\subsection{Veri On Isleme}
+Tum goruntuler egitim veya degerlendirme oncesinde sabit boyutlara yeniden olceklendirilir. Klasik ve derin ogrenme boru hatlari icin, hesaplama verimliligi ile temsil gucunu dengelemek amaciyla farkli goruntu boyutlari kullanilir. Veri seti, herhangi bir model egitiminden once egitim, dogrulama ve test alt kumesine ayrilir ve veri sizintisi onlenir. Tekrarlanabilirligi saglamak icin Python, NumPy ve PyTorch kitapliklarinda rastgele tohumlar sabitlenir.
+
+\subsection{Klasik Makine Ogrenmesi Temel Cizgisi}
+Referans model olarak elle tasarlanmis ozelliklere dayali bir goruntu siniflandirma boru hatti uygulanmistir. Histogram of Oriented Gradients (HOG), yaprak goruntulerindeki yerel kenar ve yapisal bilgiyi yakalamak icin kullanilirken, renk histogramlari hastalik belirtileriyle iliskili kromatik ozellikleri kodlar. Cikarilan ozellik vektorleri standardize edilir ve dogrusal Destek Vektor Makinasi (SVM) ile siniflandirilir.
+
+SVM hiperparametre secimi, egitim verisinin stratified bir alt kumesi uzerinde capraz dogrulama ile rastgele arama yoluyla yapilir. Hesaplama yukunu azaltmak icin cikarilan ozellikler diske onbelleklenir ve deneyler boyunca tekrar kullanilir; bu sayede boru hatti orta seviye donanimlarda daha verimli calisir.
+
+\subsection{Derin Ogrenme Modeli}
+Derin ogrenme yaklasimi icin transfer ogrenme kullanilarak ResNet-18 evrisimsel sinir agi secilmistir. Ag, ImageNet uzerinde onceden egitilmis agirliklarla baslatilir ve son tam baglanti katmani hedef sinif sayisina gore yeniden duzenlenir. Iki konfigurasyon incelenmistir: evrisimsel omurganin dondurulmesi ve ust duzey katmanlarin kismen ince ayar edilmesi.
+
+Egitim, capraz entropi kaybi ve Adam optimizer ile yurutilur. Dogrulama kaybina dayali erken durdurma, asiri uyumu ve gereksiz hesaplamayi sinirlamak icin uygulanir. Bu ayarlar, modelin verimli bicimde yakinssamasini ve genelleme performansini korumasini saglar.
+
+\section{Deneysel Tasarim}
+Deneysel tasarim, modeller arasinda adil ve seffaf bir karsilastirma saglayacak sekilde planlanmistir. HOG+SVM boru hatti klasik temel cizgi olarak, ResNet-18 modeli ise gelistirilmis derin ogrenme yaklasimi olarak kullanilmistir. Tum modeller, ayni veri bolunmeleri ve degerlendirme protokolleri ile egitilip test edilmistir.
+
+Sayisal optimizasyon deneysel duzenin onemli bir parcasidir. Klasik modelde SVM hiperparametreleri rastgele arama ile optimize edilirken, derin ogrenme modelinde ogrenme orani ve agirlik azalma taramalari yapilmis ve erken durdurma tutarli bicimde uygulanmistir. Bu tasarim, en az bir temel model ve bir gelistirilmis yaklasim kullanma gereksinimini karsilar.
+
+\section{Degerlendirme Metrikleri}
+Model performansi birden fazla tamamlayici metrikle degerlendirilir. Genel dogruluk referans olarak raporlanir ancak tek basina yeterli kabul edilmez. Makro ortalamali F1, siniflar arasi dengeli performansi olcmek icin kullanilir; precision--recall analizi ve karmasiklik matrisleri ise sinif bazli davranislar hakkinda ek gorus saglar.
+
+\section{Sonuclar}
+Deneysel sonuclar, derin ogrenme modelinin tum metriklerde klasik temel cizgiden daha iyi performans gosterdigini ortaya koyar. Ozellikle ResNet-18 daha yuksek makro F1 skorlarina ulasir; bu da sinif dengesizligine karsi daha saglam bir performans anlamina gelir. Karmasiklik matrisi analizi, hatalarin cogu gorunsel olarak benzer hastalik kategorileri arasinda ortaya cikarken, saglikli ve arka plan siniflarinin genellikle yuksek guvenle siniflandirildigini gosterir.
+
+\section{Tartisma ve Hata Analizi}
+Yanlis siniflandirilan ornekler incelendiginde hatalarin siklikla hastaliklar arasindaki ince gorsel farklardan veya dusuk kaliteli goruntulerden kaynaklandigi gorulur. Notebook icinde yer alan gradyan tabanli gorsellestirmeler, derin ogrenme modelinin yapragin hastalikla iliskili bolgelerine odaklandigini dogrulayarak niteliksel bir dogrulama saglar.
+
+\section{Sayisal Yontemler ve Optimizasyon Katkisi}
+Sayisal optimizasyon teknikleri bu projede onemli rol oynar. SVM icin hiperparametre aramasi ve derin ogrenme modeli icin ogrenme orani taramalari, yakinssama kararliligini ve genelleme performansini iyilestirir. Erken durdurma, asiri uyumu ve gereksiz egitim iterasyonlarini azaltarak sayisal yontemlerin uygulamali makine ogrenmesindeki etkisini gosterir.
+
+\section{Tekrarlanabilirlik ve Muhendislik Kalitesi}
+Tekrarlanabilirlik, sabit rastgele tohumlar, moduler kod yapisi ve deneysel ayarlarin acikca belgelendirilmesiyle saglanmistir. Veri bolunmeleri diske kaydedilmis ve ortam bilgileri gunluklere yazdirilarak deneylerin ayni kosullarda tekrarlanmasi kolaylastirilmistir.
+
+\section{Sinirlamalar ve Gelecek Calismalar}
+Guclu performansa ragmen onerilen sistemin sinirlamalari vardir. Veri kumesi buyuk oranda kontrollu kosullarda cekilmis goruntulerden olustugu icin gercek dunya tarimsal ortamlara genellenebilirlik sinirli olabilir. Gelecek calismalarda alan uyarlamasi, daha cesitli veri toplama ve gercek zamanli uygulamalar ele alinabilir.
+
+\section{Sonuc}
+Bu rapor, bitki yaprak hastaligi siniflandirmasini hem klasik makine ogrenmesi hem de derin ogrenme yaklasimlariyla kapsamli bicimde ele almistir. Derin ogrenme modelleri daha yuksek performans sunarken, klasik temel cizgiler yorumlanabilirlik ve verimlilik acisindan degerini korur. Proje, veri isleme, model tasarimi, sayisal optimizasyon ve degerlendirmeyi tekrarlanabilir bir muhendislik cercevesinde basariyla birlestirmistir.
+
+\renewcommand{\refname}{Kaynaklar}
+\begin{thebibliography}{9}
+\bibitem{plantvillage} D. Hughes and M. Salathe, ``An open access repository of images on plant health to enable the development of mobile disease diagnostics,'' arXiv:1511.08060, 2015.
+\bibitem{resnet} K. He, X. Zhang, S. Ren, and J. Sun, ``Deep residual learning for image recognition,'' in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, 2016.
+\bibitem{sklearn} F. Pedregosa et al., ``Scikit-learn: Machine learning in Python,'' Journal of Machine Learning Research, 2011.
+\bibitem{pytorch} A. Paszke et al., ``PyTorch: An imperative style, high-performance deep learning library,'' in Advances in Neural Information Processing Systems, 2019.
+\end{thebibliography}
+
+\end{document}
