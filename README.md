@@ -1,5 +1,7 @@
 # Plant Leaf Disease Classification (PlantVillage)
 
+**Results:** Fine-tuned ResNet-18 reaches 99.6% test accuracy on PlantVillage (24 classes), compared with 98.3% for a frozen backbone and 85% for a HOG + SVM baseline.
+
 **Author:** Omar A.M Issa (Student Number: 220212901)
 
 ## Overview
